@@ -8,6 +8,8 @@ class API:
         self.session = requests.Session()
 
         self.button = ButtonMethods(self)
+        self.computer = ComputerMethods(self)
+
         self.adr = None
 
     def jsonify(self, data) -> str:
