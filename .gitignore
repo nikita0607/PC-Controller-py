@@ -2,3 +2,5 @@
 venv
 env
 __pycache__
+pcclient.egg-info
+build
