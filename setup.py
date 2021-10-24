@@ -8,7 +8,7 @@ setup(
     license='MIT',
     
     author = "Nikita0607",
-    author_email = "ecfed205@gmail.com"
+    author_email = "ecfed205@gmail.com",
 
     packages=find_packages(),
     long_description=open(join(dirname(__file__), 'README.md')).read(),
