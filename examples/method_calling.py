@@ -1,10 +1,10 @@
-import lib
+import pcclient
 
 
-api = lib.API()
+api = pcclient.API()
 api.connect("nikita0607", "RoBot", "http://0.0.0.0")
 
-api.button.add("test", "Tap here!")  # Call method
-api.button.delete_all()  # Delete all created buttons for this PC
+api.method.button.add("test", "Tap here!")  # Call method
+api.method.button.delete_all()  # Delete all created buttons for this PC
 
-api.computer.disconnect()
+api.method.computer.disconnect()

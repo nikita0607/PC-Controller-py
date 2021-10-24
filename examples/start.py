@@ -1,7 +1,7 @@
-import lib
+import pcclient
 
 
-api = lib.API()  # Create API object
+api = pcclient.API()  # Create API object
 api.connect("user_name", "MyNaMe", "server_ip")  # Connect to server and send inform. about this PC
 
-api.computer.disconnect()  # Disconnect this PC
+api.method.computer.disconnect()  # Disconnect this PC

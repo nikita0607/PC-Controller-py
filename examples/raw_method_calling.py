@@ -1,7 +1,7 @@
-import lib
+import pcclient
 
 
-api = lib.API()
+api = pcclient.API()
 api.connect("nikita0607", "RoBot", "http://0.0.0.0")
 
 data = {"name": "test", "text": "Tap here!"}  # Raw data
