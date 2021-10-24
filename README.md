@@ -16,10 +16,10 @@ from pcclient import API
 api = API()
 api.button.add("but", "Tap me!!!")
 ```
-[Больше примеров]("https://github.com/nikita0607/PC-Controller-py/master/examples")
+[Больше примеров]("https://github.com/nikita0607/PC-Controller-py/tree/master/examples")
 
 
 ## Лицензия
 
 Copyright © 2019-2021 [nikita0607](https://github.com/nikita0607).\
-Этот проект имеет [MIT](https://github.com/nikita0607/LICENSE) лицензию.
+Этот проект имеет [MIT](https://github.com/nikita0607/tree/master/LICENSE) лицензию.
