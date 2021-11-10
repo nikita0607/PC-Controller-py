@@ -1,5 +1,5 @@
 """
-This modeule 
+This module 
 """
 
 import json
@@ -42,7 +42,7 @@ class API:
         :return: None
         """
         data = {"user_name": user_name, "name": computer_name}
-        self.adr = f"{_ip}:5000/a"
+        self.adr = f"{_ip}:5005/api"
         self.hash_key = hash_key
 
         return self.response(data)
