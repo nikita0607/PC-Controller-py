@@ -5,6 +5,8 @@ This module
 import json
 
 import aiohttp
+import asyncio
+import contextlib
 
 
 __version__ = "2.0.0"
@@ -25,13 +27,13 @@ class API:
     """
 
     def __init__(self):
-        self.session = aiohttp.ClientSession()
-
         self.method = Methods(self)
 
         self.adr = None
 
-    def connect(self, username: str, computer_name: str, _ip: str, hash_key: str = None):
+        self._main = None
+
+    def run(self, username: str, computer_name: str, _ip: str, hash_key: str = None):
         """
         Initialize connection with server
         :param username: Your user name on web site
@@ -40,10 +42,17 @@ class API:
         :param hash_key: Your hash key
         :return: None
         """
-        data = {"username": username, "name": computer_name, "hash_key": hash_key}
+        data = {"username": username, "name": computer_name, "method": "computer.connect"}
         self.adr = f"{_ip}:8000/api"
 
-        return self.response(data)
+        asyncio.run(self._run(data))
+
+    async def _run(self, data):
+        result = await self.response(data)
+        print(result)
+
+        if self._main:
+            await self._main()
 
     async def response(self, data: dict) -> dict:
         """
@@ -51,10 +60,10 @@ class API:
         :param data: Data for send
         :return: Actions
         """
-
-        async with self.session.post(self.adr, json=jsonify(data)) as resp:
-            actions = await resp.json()
-        return actions
+        async with aiohttp.ClientSession() as s:
+            async with s.post(self.adr, json=data) as resp:
+                result = await resp.json()
+        return result
 
     async def call_method(self, method: str, **kwargs) -> dict:
         """
@@ -67,6 +76,12 @@ class API:
         data.update(kwargs)
 
         return await self.response(data)
+
+    @staticmethod
+    def main(fn):
+        def decorator(*args, **kwargs):
+            fn(*args, **kwargs)
+        return decorator
 
 
 class Methods:
@@ -88,7 +103,7 @@ class Method:
         self.parrent = parent_api
         self.broadcast = broadcast
 
-    def call(self, method: str, **data) -> dict:
+    async def call(self, method: str, **data) -> dict:
         """
         Call method
         :param method: Method type
