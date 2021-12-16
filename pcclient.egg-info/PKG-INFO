@@ -1,10 +1,38 @@
-Metadata-Version: 1.0
+Metadata-Version: 2.1
 Name: pcclient
-Version: 1.0
+Version: 2.0.0
 Summary: UNKNOWN
-Home-page: UNKNOWN
-Author: UNKNOWN
-Author-email: UNKNOWN
-License: UNKNOWN
-Description: UNKNOWN
+Home-page: https://github.com/the-gigi/conman
+Author: Nikita0607
+Author-email: ecfed205@gmail.com
+License: MIT
 Platform: UNKNOWN
+License-File: LICENSE
+
+> РљР»РёРµРЅС‚ РґР»СЏ PC-Controller РїСЂРѕРµРєС‚Р°
+
+## РЈСЃС‚Р°РЅРѕРІРєР°
+
+РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєР»РёРµРЅС‚ РјРѕР¶РЅРѕ РєРѕРјР°РЅРґРѕР№:
+
+```shell
+pip install -U https://github.com/nikita0607/PC-Controller-py/archive/master.zip
+```
+
+## РџСЂРёРјРµСЂ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
+
+```python
+from pcclient import API
+
+api = API()
+api.button.add("but", "Tap me!!!")
+```
+[Р‘РѕР»СЊС€Рµ РїСЂРёРјРµСЂРѕРІ]("https://github.com/nikita0607/PC-Controller-py/tree/master/examples")
+
+
+## Р›РёС†РµРЅР·РёСЏ
+
+Copyright В© 2019-2021 [nikita0607](https://github.com/nikita0607).\
+Р­С‚РѕС‚ РїСЂРѕРµРєС‚ РёРјРµРµС‚ [MIT](https://github.com/nikita0607/PC-Controller-py/tree/master/LICENSE) Р»РёС†РµРЅР·РёСЋ.
+
+

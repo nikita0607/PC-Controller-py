@@ -4,9 +4,10 @@ This module
 
 import json
 
-import requests
+import aiohttp
 
-__version__ = "0.1.0"
+
+__version__ = "2.0.0"
 
 
 def jsonify(data) -> str:
@@ -24,76 +25,48 @@ class API:
     """
 
     def __init__(self):
-        self.session = requests.Session()
+        self.session = aiohttp.ClientSession()
 
         self.method = Methods(self)
-        self.broadcast_method = Methods(self, True)
 
         self.adr = None
-        self.hash_key = None
 
-    def connect(self, user_name: str, computer_name: str, _ip: str, hash_key: str = None):
+    def connect(self, username: str, computer_name: str, _ip: str, hash_key: str = None):
         """
         Initialize connection with server
-        :param user_name: Your user name on web site
+        :param username: Your user name on web site
         :param computer_name: Name of this device
         :param _ip: Server ip
         :param hash_key: Your hash key
         :return: None
         """
-        data = {"user_name": user_name, "name": computer_name}
-        self.adr = f"{_ip}:5005/api"
-        self.hash_key = hash_key
+        data = {"username": username, "name": computer_name, "hash_key": hash_key}
+        self.adr = f"{_ip}:8000/api"
 
         return self.response(data)
 
-    def response(self, data: dict, get_actions: bool = False) -> dict:
+    async def response(self, data: dict) -> dict:
         """
         Do response on server
         :param data: Data for send
-        :param get_actions: Get event actions from server
         :return: Actions
         """
 
-        data["get_actions"] = get_actions
-
-        actions = self.session.post(self.adr, json=jsonify(data)).json()
+        async with self.session.post(self.adr, json=jsonify(data)) as resp:
+            actions = await resp.json()
         return actions
 
-    def call_method(self, method: str, get_actions: bool = False, **kwargs) -> dict:
+    async def call_method(self, method: str, **kwargs) -> dict:
         """
         Call method
         :param method: Calling method
-        :param get_actions: Get event actions from server
         :param kwargs: Additional data
         :return: Actions
         """
-        data = {"action": "method", "type": method, "get_actions": get_actions}
+        data = {"method": method}
         data.update(kwargs)
 
-        return self.response(data, get_actions)
-
-    def call_broadcast_method(self, method: str, get_actions: bool = False, **kwargs) -> dict:
-        """
-        Call broadcast method
-        :param method: Calling method
-        :param get_actions: Get event actions from server
-        :param kwargs: Additional data
-        :return: Actions
-        """
-        data = {"action": "broadcast_method", "type": method, "get_actions": get_actions, "hash_key": self.hash_key}
-        data.update(kwargs)
-
-        return self.response(data, get_actions)
-
-    def get_actions(self) -> dict:
-        """
-        Get event actions from server
-        :return: Actions from server
-        """
-
-        actions = self.response({}, True)
-        return actions
+        return await self.response(data)
 
 
 class Methods:
@@ -122,9 +95,7 @@ class Method:
         :param data: Additional data
         :return:
         """
-        if not self.broadcast:
-            return self.parrent.call_method(method, **data)
-        return self.parrent.call_broadcast_method(method, **data)
+        return await self.parrent.call_method(method, **data)
 
 
 class ButtonMethods(Method):
@@ -132,7 +103,7 @@ class ButtonMethods(Method):
     Contains button methods
     """
 
-    def add(self, button_name: str, button_text: str):
+    async def add(self, button_name: str, button_text: str):
         """
         Add button in to computer in dashboard
         :param button_name: If button is clicked, then server returns this name
@@ -140,17 +111,15 @@ class ButtonMethods(Method):
         :return: Actions from server
         """
 
-        data = {"name": button_name, "text": button_text}
+        data = {"button_name": button_name, "button_text": button_text}
 
-        return self.call("button.add", **data)
+        return self.call("computer.button.add", **data)
 
-    def delete_all(self) -> dict:
-        """
-        Delete all buttons in dashboard
-        :return: Actions from server
-        """
+    async def click(self, button_name: str):
 
-        return self.call("button.delete_all")
+        data = {"button_name": button_name}
+
+        return self.call("computer.button.click")
 
 
 class ComputerMethods(Method):
@@ -158,7 +127,7 @@ class ComputerMethods(Method):
     Contains computer methods
     """
 
-    def disconnect(self):
+    async def disconnect(self):
         """
         Disconnect this device from server
         :return: Actions from server
