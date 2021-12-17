@@ -6,7 +6,6 @@ import json
 
 import aiohttp
 import asyncio
-import contextlib
 
 
 __version__ = "2.0.0"
@@ -26,33 +25,45 @@ class API:
     Main class for working with pc-controller API
     """
 
-    def __init__(self):
+    def __init__(self, username: str, name: str, password: str = None, hash_key: str = None):
         self.method = Methods(self)
 
         self.adr = None
 
         self._main = None
 
-    def run(self, username: str, computer_name: str, _ip: str, hash_key: str = None):
+        self.username = username
+        self.name = name
+        self.password = password
+        self.hash_key = hash_key
+
+    def run(self, _ip: str):
         """
         Initialize connection with server
-        :param username: Your user name on web site
-        :param computer_name: Name of this device
         :param _ip: Server ip
-        :param hash_key: Your hash key
         :return: None
         """
-        data = {"username": username, "name": computer_name, "method": "computer.connect"}
-        self.adr = f"{_ip}:8000/api"
+        self.adr = _ip
 
-        asyncio.run(self._run(data))
+        asyncio.run(self._run())
 
-    async def _run(self, data):
-        result = await self.response(data)
-        print(result)
+    async def _run(self):
+        if self.password is None:
+            if self.hash_key is None:
+                await self.method.computer.connect()
 
         if self._main:
             await self._main()
+
+    async def json_info(self) -> dict:
+        data = {"username": self.username, "name": self.name}
+
+        if self.password:
+            data["password"] = self.password
+        else:
+            data["hash_key"] = self.hash_key
+
+        return data
 
     async def response(self, data: dict) -> dict:
         """
@@ -63,6 +74,7 @@ class API:
         async with aiohttp.ClientSession() as s:
             async with s.post(self.adr, json=data) as resp:
                 result = await resp.json()
+        print(result)
         return result
 
     async def call_method(self, method: str, **kwargs) -> dict:
@@ -72,15 +84,18 @@ class API:
         :param kwargs: Additional data
         :return: Actions
         """
-        data = {"method": method}
+        data = await self.json_info()
+        data["method"] = method
         data.update(kwargs)
 
         return await self.response(data)
 
-    @staticmethod
-    def main(fn):
-        def decorator(*args, **kwargs):
-            fn(*args, **kwargs)
+    def main(self, fn):
+        self._main = fn
+
+        async def decorator(*args, **kwargs):
+            return await fn(*args, **kwargs)
+
         return decorator
 
 
@@ -141,6 +156,16 @@ class ComputerMethods(Method):
     """
     Contains computer methods
     """
+
+    async def connect(self):
+        result = await self.call("computer.connect")
+
+        if result["result"] != "error":
+            self.parrent.hash_key = result["hash_key"]
+        return result
+
+    async def get_info(self):
+        return await self.call("computer.get_info")
 
     async def disconnect(self):
         """
