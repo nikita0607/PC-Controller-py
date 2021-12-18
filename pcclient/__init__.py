@@ -2,11 +2,14 @@
 This module 
 """
 
+import asyncio
 import json
 
 import aiohttp
-import asyncio
 
+from . import error
+from . import method
+from . import result
 
 __version__ = "2.0.0"
 
@@ -26,7 +29,7 @@ class API:
     """
 
     def __init__(self, username: str, name: str, password: str = None, hash_key: str = None):
-        self.method = Methods(self)
+        self.method = method.Methods(self)
 
         self.adr = None
 
@@ -37,7 +40,7 @@ class API:
         self.password = password
         self.hash_key = hash_key
 
-    def run(self, _ip: str):
+    def run(self, _ip: str, raise_error: bool = True):
         """
         Initialize connection with server
         :param _ip: Server ip
@@ -45,9 +48,9 @@ class API:
         """
         self.adr = _ip
 
-        asyncio.run(self._run())
+        asyncio.run(self._run(raise_error))
 
-    async def _run(self):
+    async def _run(self, raise_error):
         if self.password is None:
             if self.hash_key is None:
                 await self.method.computer.connect()
@@ -65,7 +68,7 @@ class API:
 
         return data
 
-    async def response(self, data: dict) -> dict:
+    async def response(self, data: dict) -> result.ResultABC:
         """
         Do response on server
         :param data: Data for send
@@ -73,11 +76,12 @@ class API:
         """
         async with aiohttp.ClientSession() as s:
             async with s.post(self.adr, json=data) as resp:
-                result = await resp.json()
-        print(result)
-        return result
+                _result = await resp.json()
+                _result = result.ResultFabric(_result)
 
-    async def call_method(self, method: str, **kwargs) -> dict:
+        return _result
+
+    async def call_method(self, method: str, raise_error: bool = False, **kwargs) -> result.ResultABC:
         """
         Call method
         :param method: Calling method
@@ -88,91 +92,17 @@ class API:
         data["method"] = method
         data.update(kwargs)
 
-        return await self.response(data)
+        _result = await self.response(data)
+
+        if _result == result.ResultError and raise_error:
+            _result.raise_error()
+
+        return _result
 
     def main(self, fn):
         self._main = fn
 
-        async def decorator(*args, **kwargs):
-            return await fn(*args, **kwargs)
-
-        return decorator
-
-
-class Methods:
-    """
-    Contains all available methods
-    """
-
-    def __init__(self, parrent_api: API, broadcast: bool = False):
-        self.button = ButtonMethods(parrent_api, broadcast)
-        self.computer = ComputerMethods(parrent_api, broadcast)
-
-
-class Method:
-    """
-    Parent of methods group
-    """
-
-    def __init__(self, parent_api: API, broadcast: bool = True):
-        self.parrent = parent_api
-        self.broadcast = broadcast
-
-    async def call(self, method: str, **data) -> dict:
-        """
-        Call method
-        :param method: Method type
-        :param data: Additional data
-        :return:
-        """
-        return await self.parrent.call_method(method, **data)
-
-
-class ButtonMethods(Method):
-    """
-    Contains button methods
-    """
-
-    async def add(self, button_name: str, button_text: str):
-        """
-        Add button in to computer in dashboard
-        :param button_name: If button is clicked, then server returns this name
-        :param button_text: Text of button
-        :return: Actions from server
-        """
-
-        data = {"button_name": button_name, "button_text": button_text}
-
-        return self.call("computer.button.add", **data)
-
-    async def click(self, button_name: str):
-
-        data = {"button_name": button_name}
-
-        return self.call("computer.button.click")
-
-
-class ComputerMethods(Method):
-    """
-    Contains computer methods
-    """
-
-    async def connect(self):
-        result = await self.call("computer.connect")
-
-        if result["result"] != "error":
-            self.parrent.hash_key = result["hash_key"]
-        return result
-
-    async def get_info(self):
-        return await self.call("computer.get_info")
-
-    async def disconnect(self):
-        """
-        Disconnect this device from server
-        :return: Actions from server
-        """
-        return self.call("computer.disconnect")
+        return fn
 
 
 if __name__ == "__main__":

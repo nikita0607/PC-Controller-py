@@ -2,6 +2,9 @@ LICENSE
 README.md
 setup.py
 pcclient/__init__.py
+pcclient/error.py
+pcclient/method.py
+pcclient/result.py
 pcclient.egg-info/PKG-INFO
 pcclient.egg-info/SOURCES.txt
 pcclient.egg-info/dependency_links.txt
