@@ -1,3 +1,6 @@
+from .result import ResultABC
+
+
 class Methods:
     """
     Contains all available methods
@@ -17,7 +20,7 @@ class Method:
         self.parrent = parent_api
         self.broadcast = broadcast
 
-    async def call(self, method: str, **data) -> dict:
+    async def call(self, method: str, **data) -> ResultABC:
         """
         Call method
         :param method: Method type
@@ -57,11 +60,10 @@ class ComputerMethods(Method):
     """
 
     async def connect(self):
-        result = await self.call("computer.connect", raise_error=True)
-
-        if result["result"] != "error":
-            self.parrent.hash_key = result["hash_key"]
-        return result
+        _result = await self.call("computer.connect", raise_error=True)
+        if _result.result != "error":
+            self.parrent.hash_key = _result["hash_key"]
+        return _result
 
     async def get_info(self, raise_error: bool = False):
         return await self.call("computer.get_info", raise_error=raise_error)

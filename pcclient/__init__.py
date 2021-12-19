@@ -68,7 +68,7 @@ class API:
 
         return data
 
-    async def response(self, data: dict) -> result.ResultABC:
+    async def response(self, data: dict) -> dict:
         """
         Do response on server
         :param data: Data for send
@@ -77,7 +77,6 @@ class API:
         async with aiohttp.ClientSession() as s:
             async with s.post(self.adr, json=data) as resp:
                 _result = await resp.json()
-                _result = result.ResultFabric(_result)
 
         return _result
 
@@ -85,6 +84,7 @@ class API:
         """
         Call method
         :param method: Calling method
+        :param raise_error: Raise error
         :param kwargs: Additional data
         :return: Actions
         """
@@ -93,6 +93,7 @@ class API:
         data.update(kwargs)
 
         _result = await self.response(data)
+        _result = result.ResultFabric(method, _result)
 
         if _result == result.ResultError and raise_error:
             _result.raise_error()

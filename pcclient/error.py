@@ -1,14 +1,17 @@
 from typing import Type
 
 
-class Error(ValueError):
+class Error(Exception):
     loc = ""
     type = "unknown_error"
     code = 0
 
     def __init__(self, loc: str = "", msg: str = ""):
         self.loc = loc
-        super().__init__(msg)
+        self.msg = msg
+
+    def __str__(self):
+        return self.__name__+"({self.msg}. Type: {self.type}. Code: {self.code})"
 
 
 class ErrorTypes:
@@ -35,12 +38,25 @@ class ErrorFabric:
 
 
 @ErrorTypes.error
-class UnknownError(Error):
-    code = 0
-    type = "unknown_error"
+class MissedValue(Error):
+    code = 3
+    type = "missed_value"
+
+    def __init__(self, loc, msg):
+        super().__init__(loc, msg)
+        self.missed_value = loc
+
+    def __str__(self):
+        return f"MissedValue('{self.msg}' type: {self.type} missed_value: {self.missed_value})"
 
 
 @ErrorTypes.error
 class NameBusy(Error):
     code = 1
     type = "name_busy"
+
+
+@ErrorTypes.error
+class UnknownError(Error):
+    code = 0
+    type = "unknown_error"

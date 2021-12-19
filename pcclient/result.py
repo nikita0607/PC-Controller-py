@@ -7,22 +7,56 @@ class IsInstanceMeta(ABCMeta):
         return self.eq(other)
 
 
-class AnyMethod:
+class CallingMethod(ABC):
+    @abstractmethod
+    def __eq__(self, other):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+
+class AnyMethod(CallingMethod):
     def __eq__(self, other):
         return True
 
     def __str__(self):
-        return "any_method"
+        return "any"
 
 
-class BoolServerResult:
+class ServerResult(ABC):
+    @abstractmethod
+    def __eq__(self, other):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+
+class BoolServerResult(ServerResult):
     def __eq__(self, other):
         return isinstance(other, bool)
 
+    def __str__(self):
+        return "bool"
 
-class AneServerResult:
+
+class DictServerResult(ServerResult):
+    def __eq__(self, other):
+        return isinstance(other, dict)
+
+    def __str__(self):
+        return "dict"
+
+
+class AneServerResult(ServerResult):
     def __eq__(self, other):
         return True
+
+    def __str__(self):
+        return "any"
 
 
 class ResultABC(ABC, metaclass=IsInstanceMeta):
@@ -32,7 +66,7 @@ class ResultABC(ABC, metaclass=IsInstanceMeta):
 
     @abstractmethod
     def __init__(self, _raw: dict):
-        pass
+        self._raw = _raw
 
     @classmethod
     def check(cls, method, _result) -> bool:
@@ -40,10 +74,13 @@ class ResultABC(ABC, metaclass=IsInstanceMeta):
 
     @classmethod
     def eq(cls, other):
-        return isinstance(other, cls)
+        return type(other) is cls
 
     def __str__(self):
-        return f"Result(called_method={self.method}, result={self.result})"
+        return self.__class__.__name__ + f"(called_method={self.method}, result={self.result})"
+
+    def __getitem__(self, item):
+        return self._raw[item]
 
 
 class ResultTypes:
@@ -63,7 +100,6 @@ class ResultTypes:
 
 class ResultFabric:
 
-    @classmethod
     def __new__(cls, called_method: str, _raw: dict) -> ResultABC:
         return ResultTypes.find_result_object(called_method, _raw["result"])(_raw)
 
@@ -71,13 +107,41 @@ class ResultFabric:
 @ResultTypes.result
 class ResultError(ResultABC):
     def __init__(self, _raw: dict):
+        super().__init__(_raw)
         self.errors = list(map(error.ErrorFabric.gen_error, _raw["errors"]))
 
     def raise_error(self):
         raise self.errors[0]
 
     def __str__(self):
-        return super().__str__()[:-1] + f"errors={self.errors})"
+        return super().__str__()[:-1] + f", errors={self.errors})"
+
+
+@ResultTypes.result
+class ResultConnect(ResultABC):
+    method = "computer.connect"
+    result = BoolServerResult()
+
+    def __init__(self, _raw: dict):
+        super().__init__(_raw)
+
+    def __str__(self):
+        return super().__str__()
+
+
+@ResultTypes.result
+class ResultInfo(ResultABC):
+    method = "computer.get_info"
+    result = DictServerResult()
+
+    def __init__(self, _raw):
+        super().__init__(_raw)
+
+    def __str__(self):
+        return super().__str__()[:-1] + f", result_dict={self._raw['result']})"
+
+    def result_dict(self):
+        return self._raw["result"]
 
 
 @ResultTypes.result
@@ -85,7 +149,7 @@ class ResultEmpty(ResultABC):
     result = AneServerResult()
 
     def __init__(self, _raw):
-        pass
+        super().__init__(_raw)
 
     def __str__(self):
         return "Result(Empty)"
