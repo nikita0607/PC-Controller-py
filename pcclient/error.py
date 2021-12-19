@@ -11,7 +11,7 @@ class Error(Exception):
         self.msg = msg
 
     def __str__(self):
-        return self.__name__+"({self.msg}. Type: {self.type}. Code: {self.code})"
+        return self.__class__.__name__ + f"('{self.msg}', type: {self.type}, code: {self.code})"
 
 
 class ErrorTypes:
