@@ -45,13 +45,13 @@ class ButtonMethods(Method):
 
         data = {"button_name": button_name, "button_text": button_text}
 
-        return self.call("computer.button.add", **data)
+        return await self.call("computer.button.add", **data)
 
     async def click(self, button_name: str):
 
         data = {"button_name": button_name}
 
-        return self.call("computer.button.click")
+        return await self.call("computer.button.click")
 
 
 class ComputerMethods(Method):
