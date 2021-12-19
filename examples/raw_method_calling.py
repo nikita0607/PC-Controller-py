@@ -1,12 +1,20 @@
 import pcclient
 
 
-api = pcclient.API()
-api.connect("nikita0607", "RoBot", "http://0.0.0.0")
+api = pcclient.API("nikita0607", "RoBo")
 
-data = {"name": "test", "text": "Tap here!"}  # Raw data
-api.call_method("button.add", **data)   # Calling method with raw data
 
-api.call_method("button.add", name="test", text="Or tap here!")  # You can do this!!
+@api.main
+async def main():
+    data = {"name": "test", "text": "Tap here!"}  # Raw data
 
-api.call_method("computer.disconnect")   # You can call methods without raw data
+    await api.call_method("button.add", **data)   # Calling method with raw data
+
+    await api.call_method("button.add", name="test", text="Or tap here!")  # You can do this!!
+
+    await api.call_method("computer.disconnect")   # You can call methods without raw data
+
+
+api.run("http://0.0.0.0")
+
+

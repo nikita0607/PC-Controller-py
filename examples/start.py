@@ -1,7 +1,12 @@
 import pcclient
 
 
-api = pcclient.API()  # Create API object
-api.connect("user_name", "MyNaMe", "server_ip")  # Connect to server and send inform. about this PC
+api = pcclient.API("user_name", "MyName")  # Create API object
 
-api.method.computer.disconnect()  # Disconnect this PC
+
+@api.main
+async def main():
+    pass
+
+
+api.run("http://0.0.0.0")
