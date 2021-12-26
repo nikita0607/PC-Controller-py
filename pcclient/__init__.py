@@ -1,5 +1,6 @@
 """
 This module 
+
 """
 
 import asyncio
@@ -10,6 +11,7 @@ import aiohttp
 from . import error
 from . import method
 from . import result
+
 
 __version__ = "2.0.0"
 
@@ -56,7 +58,15 @@ class API:
                 await self.method.computer.connect()
 
         if self._main:
-            await self._main()
+            listen_events = await self._main()
+            if listen_events:
+                self._listen_events()
+
+        else:
+            self._listen_events()
+
+    async def _listen_events(self):
+        pass
 
     async def json_info(self) -> dict:
         data = {"username": self.username, "name": self.name}

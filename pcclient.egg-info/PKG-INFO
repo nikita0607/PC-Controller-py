@@ -9,14 +9,14 @@ License: MIT
 Platform: UNKNOWN
 License-File: LICENSE
 
-> РљР»РёРµРЅС‚ РґР»СЏ PC-Controller РїСЂРѕРµРєС‚Р°
+# РђСЃРёРЅС…СЂРѕРЅРЅС‹Р№ РєР»РёРµРЅС‚ РґР»СЏ PC-Controller РїСЂРѕРµРєС‚Р°
 
 ## РЈСЃС‚Р°РЅРѕРІРєР°
 
 РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєР»РёРµРЅС‚ РјРѕР¶РЅРѕ РєРѕРјР°РЅРґРѕР№:
 
 ```shell
-pip install -U https://github.com/nikita0607/PC-Controller-py/archive/master.zip
+pip install -U https://github.com/nikita0607/PC-Controller-py/archive/dev.zip
 ```
 
 ## РџСЂРёРјРµСЂ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
@@ -24,15 +24,20 @@ pip install -U https://github.com/nikita0607/PC-Controller-py/archive/master.zip
 ```python
 from pcclient import API
 
-api = API()
-api.button.add("but", "Tap me!!!")
+api = API("nikita0607", "RoBo")
+
+@api.main
+async def main():
+    await api.method.computer.get_info()
+
+api.run("http://0.0.0.0")
 ```
 [Р‘РѕР»СЊС€Рµ РїСЂРёРјРµСЂРѕРІ]("https://github.com/nikita0607/PC-Controller-py/tree/master/examples")
 
 
 ## Р›РёС†РµРЅР·РёСЏ
 
-Copyright В© 2019-2021 [nikita0607](https://github.com/nikita0607).\
+Copyright В© 2019-2021 [nikita0607](https://github.com/nikita0607). \
 Р­С‚РѕС‚ РїСЂРѕРµРєС‚ РёРјРµРµС‚ [MIT](https://github.com/nikita0607/PC-Controller-py/tree/master/LICENSE) Р»РёС†РµРЅР·РёСЋ.
 
 
