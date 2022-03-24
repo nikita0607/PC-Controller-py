@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pcclient
-Version: 2.0.0
+Version: 2.0.1
 Summary: UNKNOWN
 Home-page: https://github.com/the-gigi/conman
 Author: Nikita0607
@@ -9,17 +9,17 @@ License: MIT
 Platform: UNKNOWN
 License-File: LICENSE
 
-# РђСЃРёРЅС…СЂРѕРЅРЅС‹Р№ РєР»РёРµРЅС‚ РґР»СЏ PC-Controller РїСЂРѕРµРєС‚Р°
+# Асинхронный клиент для PC-Controller проекта
 
-## РЈСЃС‚Р°РЅРѕРІРєР°
+## Установка
 
-РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєР»РёРµРЅС‚ РјРѕР¶РЅРѕ РєРѕРјР°РЅРґРѕР№:
+Установить клиент можно командой:
 
 ```shell
 pip install -U https://github.com/nikita0607/PC-Controller-py/archive/dev.zip
 ```
 
-## РџСЂРёРјРµСЂ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
+## Пример использования
 
 ```python
 from pcclient import API
@@ -32,12 +32,12 @@ async def main():
 
 api.run("http://0.0.0.0")
 ```
-[Р‘РѕР»СЊС€Рµ РїСЂРёРјРµСЂРѕРІ]("https://github.com/nikita0607/PC-Controller-py/tree/master/examples")
+[Больше примеров]("https://github.com/nikita0607/PC-Controller-py/tree/master/examples")
 
 
-## Р›РёС†РµРЅР·РёСЏ
+## Лицензия
 
-Copyright В© 2019-2021 [nikita0607](https://github.com/nikita0607). \
-Р­С‚РѕС‚ РїСЂРѕРµРєС‚ РёРјРµРµС‚ [MIT](https://github.com/nikita0607/PC-Controller-py/tree/master/LICENSE) Р»РёС†РµРЅР·РёСЋ.
+Copyright © 2019-2021 [nikita0607](https://github.com/nikita0607). \
+Этот проект имеет [MIT](https://github.com/nikita0607/PC-Controller-py/tree/master/LICENSE) лицензию.
 
 

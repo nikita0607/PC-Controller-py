@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod, ABCMeta
+from typing import List
+
 from . import error
 
 
@@ -84,7 +86,7 @@ class ResultABC(ABC, metaclass=IsInstanceMeta):
 
 
 class ResultTypes:
-    results: list[ResultABC] = []
+    results: List[ResultABC] = []
 
     @classmethod
     def result(cls, result_cls):

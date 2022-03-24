@@ -7,7 +7,7 @@ print(os.listdir())
 
 setup(
     name='pcclient',
-    version='2.0.0',
+    version='2.0.1',
     url='https://github.com/the-gigi/conman',
     license='MIT',
 

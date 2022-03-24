@@ -1,7 +1,7 @@
 import pcclient
 
 
-api = pcclient.API("user_name", "MyName")  # Create API object
+api = pcclient.API("nikita0607", "MyPC")  # Create API object
 
 
 @api.main
@@ -9,4 +9,4 @@ async def main():
     pass
 
 
-api.run("http://0.0.0.0")
+api.run("http://127.0.0.1:8000/api")
