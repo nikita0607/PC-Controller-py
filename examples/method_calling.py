@@ -9,4 +9,4 @@ async def main():
     await api.method.button.add("test", "Tap here!")  # Call method
 
 
-api.run("http://0.0.0.0")
+api.run("http://127.0.0.1:8000/api")

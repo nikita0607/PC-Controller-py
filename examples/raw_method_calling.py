@@ -15,6 +15,5 @@ async def main():
     await api.call_method("computer.disconnect")   # You can call methods without raw data
 
 
-api.run("http://0.0.0.0")
-
+api.run("http://127.0.0.1:8000/api")
 

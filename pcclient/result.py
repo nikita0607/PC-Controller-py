@@ -52,8 +52,14 @@ class DictServerResult(ServerResult):
     def __str__(self):
         return "dict"
 
+class ListServerResult(ServerResult):
+    def __eq__(self, other):
+        return isinstance(other, list)
+    def __str__(self):
+        return "list"
 
-class AneServerResult(ServerResult):
+
+class AnyServerResult(ServerResult):
     def __eq__(self, other):
         return True
 
@@ -147,8 +153,23 @@ class ResultInfo(ResultABC):
 
 
 @ResultTypes.result
+class ResultEvents(ResultABC):
+    method = "computer.get_events"
+    result = ListServerResult()
+
+    def __init__(self, _raw):
+        super().__init__(_raw)
+
+    def __str__(self):
+        return super().__str__()[:-1] + f", events={self._raw['result']})"
+
+    def events_list(self):
+        return self._raw['result']
+
+
+@ResultTypes.result
 class ResultEmpty(ResultABC):
-    result = AneServerResult()
+    result = AnyServerResult()
 
     def __init__(self, _raw):
         super().__init__(_raw)

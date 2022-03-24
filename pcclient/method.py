@@ -51,7 +51,7 @@ class ButtonMethods(Method):
 
         data = {"button_name": button_name}
 
-        return await self.call("computer.button.click")
+        return await self.call("computer.button.click", **data)
 
 
 class ComputerMethods(Method):
@@ -67,10 +67,13 @@ class ComputerMethods(Method):
 
     async def get_info(self, raise_error: bool = False):
         return await self.call("computer.get_info", raise_error=raise_error)
+    
+    async def get_events(self, raise_error: bool = False):
+        return await self.call("computer.get_events", raise_error=raise_error)
 
     async def disconnect(self):
         """
         Disconnect this device from server
         :return: Actions from server
         """
-        return self.call("computer.disconnect")
+        return await self.call("computer.disconnect")
