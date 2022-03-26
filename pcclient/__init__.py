@@ -49,8 +49,15 @@ class API:
         :return: None
         """
         self.adr = _ip
-
-        asyncio.run(self._run(raise_error, auto_disconnect))
+        
+        try:
+            asyncio.run(self._run(raise_error, auto_disconnect))
+        except BaseException as ex:
+            if auto_disconnect:
+                print("Disconnectig")
+                asyncio.run(self.method.computer.disconnect())
+            raise ex
+        print("return")
 
     async def _run(self, raise_error, auto_disconnect):
         if self.password is None:

@@ -1,5 +1,5 @@
-from .result import ResultABC
-
+from .result import ResultABC, ResultError, ResultEvents
+from typing import Union
 
 class Methods:
     """
@@ -57,19 +57,35 @@ class ButtonMethods(Method):
 class ComputerMethods(Method):
     """
     Contains computer methods
+
     """
 
+    event_start_id = 0
+
     async def connect(self):
-        _result = await self.call("computer.connect", raise_error=True)
+        _result = await self.call("computer.connect")
         if _result.result != "error":
             self.parrent.hash_key = _result["hash_key"]
         return _result
 
-    async def get_info(self, raise_error: bool = False):
+    async def get_info(self, raise_error: bool = False, start_id=None):
         return await self.call("computer.get_info", raise_error=raise_error)
     
-    async def get_events(self, raise_error: bool = False):
-        return await self.call("computer.get_events", raise_error=raise_error)
+    async def get_events(self, raise_error: bool = False, start_id=None):
+        if start_id is None:
+            start_id = self.event_start_id+1
+        
+        res: Union[ResultEvents, ResultError] = await self.call(
+                method="computer.get_events", 
+                raise_error=raise_error,
+                start_id=start_id)
+
+        if ResultError == res:
+            return res
+        
+        if len(res.events_list()):
+            self.event_start_id = res.events_list()[-1]["id"]
+        return res
 
     async def disconnect(self):
         """
