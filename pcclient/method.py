@@ -1,6 +1,7 @@
 from .result import ResultABC, ResultError, ResultEvents
 from typing import Union
 
+
 class Methods:
     """
     Contains all available methods
@@ -57,28 +58,46 @@ class ButtonMethods(Method):
 class ComputerMethods(Method):
     """
     Contains computer methods
-
     """
 
     event_start_id = 0
 
     async def connect(self):
+        """
+        Connect to server
+        """
         _result = await self.call("computer.connect")
         if _result.result != "error":
             self.parrent.hash_key = _result["hash_key"]
         return _result
 
-    async def get_info(self, raise_error: bool = False, start_id=None):
+    async def get_info(self, raise_error: bool = False):
+        """
+        Get info about connected computers
+        :param raise_error: Raise error from server
+        :return: None
+        """
         return await self.call("computer.get_info", raise_error=raise_error)
     
-    async def get_events(self, raise_error: bool = False, start_id=None):
+    async def get_events(self, raise_error: bool = False, start_id: int = None, for_name: str = None):
+        """
+        Get computer events from server
+        :param raise_error: Raise error from server
+        :param start_id: Get events from this id to end
+        :param for_name: Call this method for computer with this name
+        :return: None
+        """
         if start_id is None:
             start_id = self.event_start_id+1
+
+        data = {"method": "computer.get_events",
+                "raise_error": raise_error,
+                "start_id": start_id}
+
+        if for_name:
+            data["for_name"] = for_name
         
-        res: Union[ResultEvents, ResultError] = await self.call(
-                method="computer.get_events", 
-                raise_error=raise_error,
-                start_id=start_id)
+        res: Union[ResultEvents, ResultError] = await self.call(**data)
 
         if ResultError == res:
             return res

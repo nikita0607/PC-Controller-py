@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod, ABCMeta
-from typing import List
+from typing import List, Type
 
 from . import error
 
@@ -92,7 +92,7 @@ class ResultABC(ABC, metaclass=IsInstanceMeta):
 
 
 class ResultTypes:
-    results: List[ResultABC] = []
+    results: List[Type[ResultABC]] = []
 
     @classmethod
     def result(cls, result_cls):
@@ -100,7 +100,7 @@ class ResultTypes:
         return result_cls
 
     @classmethod
-    def find_result_object(cls, method, result) -> ResultABC:
+    def find_result_object(cls, method, result) -> Type[ResultABC]:
         for res in cls.results:
             if res.check(method, result):
                 return res

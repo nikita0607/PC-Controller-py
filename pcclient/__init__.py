@@ -30,10 +30,10 @@ class API:
     Main class for working with pc-controller API
     """
 
-    def __init__(self, username: str, name: str, password: str = None, hash_key: str = None):
+    def __init__(self, _ip: str, username: str, name: str, password: str = None, hash_key: str = None):
         self.method = method.Methods(self)
 
-        self.adr = None
+        self.adr = _ip
 
         self._main = None
 
@@ -42,14 +42,25 @@ class API:
         self.password = password
         self.hash_key = hash_key
 
-    def run(self, _ip: str, raise_error: bool = True, auto_disconnect: bool = True):
+    def register(self, password: str) -> result.ResultABC:
+        """
+        Register new user
+        :param password: New password
+        :return: Result
+        """
+        return asyncio.run(self._register(password))
+
+    async def _register(self, password: str) -> result.ResultABC:
+        return await self.call_method("user.register", username=self.username, password=password)
+
+    def run(self, raise_error: bool = True, auto_disconnect: bool = True):
         """
         Initialize connection with server
-        :param _ip: Server ip
+        :param raise_error: Raise error from server
+        :auto_disconnect: Disconnect after work main function
         :return: None
         """
-        self.adr = _ip
-        
+
         try:
             asyncio.run(self._run(raise_error, auto_disconnect))
         except BaseException as ex:
@@ -57,7 +68,6 @@ class API:
                 print("Disconnectig")
                 asyncio.run(self.method.computer.disconnect())
             raise ex
-        print("return")
 
     async def _run(self, raise_error, auto_disconnect):
         if self.password is None:
@@ -67,10 +77,10 @@ class API:
         if self._main:
             listen_events = await self._main()
             if listen_events:
-                self._listen_events()
+                await self._listen_events()
 
         else:
-            self._listen_events()
+            await self._listen_events()
 
         if auto_disconnect:
             await self.method.computer.disconnect()
