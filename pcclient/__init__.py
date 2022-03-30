@@ -30,7 +30,7 @@ class API:
     Main class for working with pc-controller API
     """
 
-    def __init__(self, _ip: str, username: str, name: str, password: str = None, hash_key: str = None):
+    def __init__(self, _ip: str, username: str, name: str, password: str = None, hash_key: str = None, c_hash_key: str = None):
         self.method = method.Methods(self)
 
         self.adr = _ip
@@ -41,6 +41,7 @@ class API:
         self.name = name
         self.password = password
         self.hash_key = hash_key
+        self.c_hash_key = c_hash_key
 
     def register(self, password: str) -> result.ResultABC:
         """
@@ -95,6 +96,9 @@ class API:
             data["password"] = self.password
         else:
             data["hash_key"] = self.hash_key
+        
+        if self.c_hash_key:
+            data["c_hash_key"] = self.c_hash_key
 
         return data
 
