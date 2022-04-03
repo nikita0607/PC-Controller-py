@@ -112,6 +112,17 @@ class ResultFabric:
         return ResultTypes.find_result_object(called_method, _raw["result"])(_raw)
 
 
+class ResultOnlyBool(ResultABC):
+    result = BoolServerResult()
+
+    def __init__(self, _raw: dict):
+        super().__init__(_raw)
+        self.status = _raw["result"]
+
+    def __str__(self):
+        return super().__str__()[:-1] + f", status={self.status})"
+
+
 @ResultTypes.result
 class ResultError(ResultABC):
     def __init__(self, _raw: dict):
@@ -126,15 +137,8 @@ class ResultError(ResultABC):
 
 
 @ResultTypes.result
-class ResultConnect(ResultABC):
+class ResultConnect(ResultOnlyBool):
     method = "computer.connect"
-    result = BoolServerResult()
-
-    def __init__(self, _raw: dict):
-        super().__init__(_raw)
-
-    def __str__(self):
-        return super().__str__()
 
 
 @ResultTypes.result
@@ -153,6 +157,11 @@ class ResultInfo(ResultABC):
 
 
 @ResultTypes.result
+class ResultButtonClick(ResultOnlyBool):
+    method = "computer.button.click"
+
+
+@ResultTypes.result
 class ResultEvents(ResultABC):
     method = "computer.get_events"
     result = ListServerResult()
@@ -165,6 +174,22 @@ class ResultEvents(ResultABC):
 
     def events_list(self):
         return self._raw['result']
+
+
+@ResultTypes.result
+class ResultComputers(ResultABC):
+    method = "user.get_computers"
+    result = ListServerResult()
+
+    def __init__(self, _raw):
+        super().__init__(_raw)
+
+    def __str__(self):
+        return super().__str__()[:-1] + f", computers={self._raw['result']})"
+
+    @property
+    def computers(self):
+        return self._raw["result"]
 
 
 @ResultTypes.result

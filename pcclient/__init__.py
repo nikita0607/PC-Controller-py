@@ -33,7 +33,7 @@ class API:
     def __init__(self, _ip: str, username: str, name: str, password: str = None, hash_key: str = None):
         self.method = method.Methods(self)
 
-        self.adr = _ip
+        self.adr = _ip+"/api"
 
         self._main = None
 
@@ -41,6 +41,7 @@ class API:
         self.name = name
         self.password = password
         self.hash_key = hash_key
+        self.c_hash_key = None
 
     def register(self, password: str) -> result.ResultABC:
         """
@@ -57,17 +58,21 @@ class API:
         """
         Initialize connection with server
         :param raise_error: Raise error from server
-        :auto_disconnect: Disconnect after work main function
+        :param auto_disconnect: Disconnect after work main function
         :return: None
         """
-
+        exp = None
         try:
             asyncio.run(self._run(raise_error, auto_disconnect))
         except BaseException as ex:
-            if auto_disconnect:
-                print("Disconnectig")
-                asyncio.run(self.method.computer.disconnect())
-            raise ex
+            exp = ex
+
+        if auto_disconnect and self.c_hash_key:
+            print("Disconnectig")
+            asyncio.run(self.method.computer.disconnect())
+
+        if exp:
+            raise exp
 
     async def _run(self, raise_error, auto_disconnect):
         if self.password is None:
@@ -95,6 +100,9 @@ class API:
             data["password"] = self.password
         else:
             data["hash_key"] = self.hash_key
+
+        if self.c_hash_key:
+            data["c_hash_key"] = self.c_hash_key
 
         return data
 
