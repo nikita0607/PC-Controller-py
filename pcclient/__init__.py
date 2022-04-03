@@ -13,7 +13,7 @@ from . import method
 from . import result
 
 
-__version__ = "2.0.0"
+__version__ = "2.1.3"
 
 
 def jsonify(data) -> str:
@@ -100,7 +100,7 @@ class API:
             data["password"] = self.password
         else:
             data["hash_key"] = self.hash_key
-
+        
         if self.c_hash_key:
             data["c_hash_key"] = self.c_hash_key
 
