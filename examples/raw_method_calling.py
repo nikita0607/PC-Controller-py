@@ -1,7 +1,7 @@
 import pcclient
 
 
-api = pcclient.API("nikita0607", "RoBo")
+api = pcclient.API("http://127.0.0.1:8000", "nikita0607", "RoBo")
 
 
 @api.main
@@ -12,8 +12,8 @@ async def main():
 
     await api.call_method("button.add", name="test", text="Or tap here!")  # You can do this!!
 
-    await api.call_method("computer.disconnect")   # You can call methods without raw data
+    await api.call_method("computer.disconnect")  # You can call methods without raw data
+    # You can use it, but library do autodisconnecting
 
-
-api.run("http://127.0.0.1:8000/api")
+api.run()
 

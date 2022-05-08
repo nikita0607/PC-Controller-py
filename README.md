@@ -13,13 +13,13 @@ pip install -U https://github.com/nikita0607/PC-Controller-py/archive/dev.zip
 ```python
 from pcclient import API
 
-api = API("nikita0607", "RoBo")
+api = API("http://0.0.0.0:8000", "nikita0607", "RoBo")
 
 @api.main
 async def main():
     await api.method.computer.get_info()
 
-api.run("http://0.0.0.0:8000/api")
+api.run()
 ```
 [Больше примеров]("https://github.com/nikita0607/PC-Controller-py/tree/master/examples")
 

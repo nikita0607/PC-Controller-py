@@ -7,11 +7,11 @@ print(os.listdir())
 
 setup(
     name='pcclient',
-    version='2.1.2',
+    version='2.1.3',
     url='https://github.com/the-gigi/conman',
     license='MIT',
 
-    author="Nikita0607",
+    author="nikita0607",
     author_email="ecfed205@gmail.com",
 
     packages=find_packages(),

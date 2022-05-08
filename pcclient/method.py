@@ -48,11 +48,14 @@ class ButtonMethods(Method):
 
         return await self.call("computer.button.add", **data)
 
-    async def click(self, button_name: str):
+    async def click(self, button_name: str, for_name: str = None):
 
-        data = {"button_name": button_name}
+        data = {"method": "computer.button.click",
+                "button_name": button_name}
+        if for_name:
+            data["for_name"] = for_name
 
-        return await self.call("computer.button.click", **data)
+        return await self.call(**data)
 
 
 class ComputerMethods(Method):
@@ -62,22 +65,34 @@ class ComputerMethods(Method):
 
     event_start_id = 0
 
+    async def get_computers(self):
+        """
+        Get computers of this user
+        """
+
+        return await self.call("user.get_computers")
+
     async def connect(self):
         """
         Connect to server
         """
         _result = await self.call("computer.connect")
+        print(_result)
         if _result.result != "error":
-            self.parrent.hash_key = _result["hash_key"]
+            self.parrent.c_hash_key = _result["c_hash_key"]
         return _result
 
-    async def get_info(self, raise_error: bool = False):
+    async def get_info(self, raise_error: bool = False, for_name: str = None):
         """
         Get info about connected computers
         :param raise_error: Raise error from server
         :return: None
         """
-        return await self.call("computer.get_info", raise_error=raise_error)
+        data = {"method": "computers.get_info"}
+        if for_name:
+            data["for_name"] = for_name
+
+        return await self.call(**data, raise_error=raise_error)
     
     async def get_events(self, raise_error: bool = False, start_id: int = None, for_name: str = None):
         """

@@ -13,7 +13,7 @@ from . import method
 from . import result
 
 
-__version__ = "2.1.2"
+__version__ = "2.1.3"
 
 
 def jsonify(data) -> str:
@@ -30,10 +30,10 @@ class API:
     Main class for working with pc-controller API
     """
 
-    def __init__(self, _ip: str, username: str, name: str, password: str = None, hash_key: str = None, c_hash_key: str = None):
+    def __init__(self, _ip: str, username: str, name: str, password: str = None, hash_key: str = None):
         self.method = method.Methods(self)
 
-        self.adr = _ip
+        self.adr = _ip+"/api"
 
         self._main = None
 
@@ -41,7 +41,7 @@ class API:
         self.name = name
         self.password = password
         self.hash_key = hash_key
-        self.c_hash_key = c_hash_key
+        self.c_hash_key = None
 
     def register(self, password: str) -> result.ResultABC:
         """
@@ -58,17 +58,21 @@ class API:
         """
         Initialize connection with server
         :param raise_error: Raise error from server
-        :auto_disconnect: Disconnect after work main function
+        :param auto_disconnect: Disconnect after work main function
         :return: None
         """
-
+        exp = None
         try:
             asyncio.run(self._run(raise_error, auto_disconnect))
         except BaseException as ex:
-            if auto_disconnect:
-                print("Disconnectig")
-                asyncio.run(self.method.computer.disconnect())
-            raise ex
+            exp = ex
+
+        if auto_disconnect and self.c_hash_key:
+            print("Disconnectig")
+            asyncio.run(self.method.computer.disconnect())
+
+        if exp:
+            raise exp
 
     async def _run(self, raise_error, auto_disconnect):
         """
