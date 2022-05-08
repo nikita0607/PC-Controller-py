@@ -13,7 +13,7 @@ from . import method
 from . import result
 
 
-__version__ = "2.0.0"
+__version__ = "2.1.2"
 
 
 def jsonify(data) -> str:
@@ -71,6 +71,11 @@ class API:
             raise ex
 
     async def _run(self, raise_error, auto_disconnect):
+        """
+        Asyncronyos running main async function
+        :param raise_error: Raise error?
+        :param auto_disconnect: Autodisconnecting after main function return
+        """
         if self.password is None:
             if self.hash_key is None:
                 await self.method.computer.connect()
